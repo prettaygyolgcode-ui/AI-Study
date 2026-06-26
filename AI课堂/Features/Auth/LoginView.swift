@@ -37,6 +37,7 @@ struct LoginView: View {
                     text: $viewModel.phoneNumber,
                     keyboardType: .numberPad
                 )
+                .accessibilityIdentifier("phoneField")
             }
 
             VStack(alignment: .leading, spacing: AppSpacing.xs) {
@@ -50,6 +51,7 @@ struct LoginView: View {
                         text: $viewModel.verificationCode,
                         keyboardType: .numberPad
                     )
+                        .accessibilityIdentifier("codeField")
                         .padding(AppSpacing.md)
                         .frame(maxWidth: .infinity)
                         .background(AppColors.loginFieldBackground, in: RoundedRectangle(cornerRadius: 18))
@@ -61,6 +63,7 @@ struct LoginView: View {
                     Button(viewModel.countdown > 0 ? "\(viewModel.countdown)s 后重试" : "获取验证码") {
                         viewModel.requestCode()
                     }
+                    .accessibilityIdentifier("requestCodeButton")
                     .buttonStyle(.borderedProminent)
                     .tint(AppColors.primaryAction)
                     .disabled(!viewModel.canRequestCode || viewModel.countdown > 0)
@@ -77,6 +80,7 @@ struct LoginView: View {
             Button("进入课堂") {
                 _ = viewModel.submit()
             }
+            .accessibilityIdentifier("enterClassroomButton")
             .buttonStyle(.borderedProminent)
             .tint(AppColors.primaryAction)
             .frame(maxWidth: .infinity, alignment: .leading)

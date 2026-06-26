@@ -33,6 +33,7 @@ struct PlazaView: View {
                     }
                 }
                 .padding(AppSpacing.md)
+                .accessibilityIdentifier("plazaScreen")
             }
             .background(AppColors.background.ignoresSafeArea())
             .navigationTitle("广场")

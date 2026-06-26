@@ -10,9 +10,7 @@ struct CreateCardGridView: View {
     var body: some View {
         LazyVGrid(columns: columns, spacing: AppSpacing.md) {
             ForEach(appState.creationTypes) { type in
-                NavigationLink {
-                    CreationFormView(type: type)
-                } label: {
+                NavigationLink(value: type) {
                     VStack(alignment: .leading, spacing: AppSpacing.sm) {
                         Image(systemName: type.icon)
                             .font(.system(size: 26, weight: .semibold))
@@ -44,7 +42,11 @@ struct CreateCardGridView: View {
                             .stroke(type.tintColor.opacity(0.24), lineWidth: 1)
                     )
                     .shadow(color: AppColors.shadow, radius: 10, y: 6)
+                    .contentShape(RoundedRectangle(cornerRadius: 24))
                 }
+                .accessibilityIdentifier("creationCard-\(type.kind.rawValue)")
+                .accessibilityLabel(type.name)
+                .accessibilityElement(children: .ignore)
                 .buttonStyle(.plain)
             }
         }

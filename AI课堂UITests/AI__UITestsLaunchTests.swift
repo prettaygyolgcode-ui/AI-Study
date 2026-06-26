@@ -22,11 +22,10 @@ final class AI__UITestsLaunchTests: XCTestCase {
         let app = XCUIApplication()
         app.launch()
 
-        // Insert steps here to perform after app launch but before taking a screenshot,
-        // such as logging into a test account or navigating somewhere in the app
+        XCTAssertTrue(app.otherElements["loginRoot"].waitForExistence(timeout: 4))
 
         let attachment = XCTAttachment(screenshot: app.screenshot())
-        attachment.name = "Launch Screen"
+        attachment.name = "Login Screen"
         attachment.lifetime = .keepAlways
         add(attachment)
     }

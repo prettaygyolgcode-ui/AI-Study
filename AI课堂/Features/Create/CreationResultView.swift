@@ -50,6 +50,7 @@ struct CreationResultView: View {
                         Button("发布到广场") {
                             appState.publishProject(id: project.id)
                         }
+                        .accessibilityIdentifier("publishToPlazaButton")
                         .buttonStyle(.bordered)
                         .tint(AppColors.primaryAction)
                     }

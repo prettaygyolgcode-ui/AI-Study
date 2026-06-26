@@ -21,10 +21,10 @@ struct CreationFormView: View {
                 promptTip
 
                 VStack(alignment: .leading, spacing: AppSpacing.md) {
-                    textField("给作品起个名字", text: $title)
-                    textField("这次想围绕什么主题", text: $subject)
-                    textField("想要什么风格", text: $style)
-                    textField("希望它带来什么感觉", text: $mood)
+                    textField("给作品起个名字", text: $title, accessibilityIdentifier: "creationTitleField")
+                    textField("这次想围绕什么主题", text: $subject, accessibilityIdentifier: "creationSubjectField")
+                    textField("想要什么风格", text: $style, accessibilityIdentifier: "creationStyleField")
+                    textField("希望它带来什么感觉", text: $mood, accessibilityIdentifier: "creationMoodField")
                 }
 
                 suggestionRow
@@ -32,6 +32,7 @@ struct CreationFormView: View {
                 PrimaryButton(title: "开始创作", isEnabled: prompt.isValid) {
                     generatedProject = appState.generateProject(type: type.kind, prompt: prompt)
                 }
+                .accessibilityIdentifier("startCreationButton")
             }
             .padding(AppSpacing.md)
         }
@@ -78,7 +79,7 @@ struct CreationFormView: View {
         }
     }
 
-    private func textField(_ placeholder: String, text: Binding<String>) -> some View {
+    private func textField(_ placeholder: String, text: Binding<String>, accessibilityIdentifier: String) -> some View {
         VStack(alignment: .leading, spacing: AppSpacing.xs) {
             Text(placeholder)
                 .font(.subheadline.weight(.semibold))
@@ -89,6 +90,7 @@ struct CreationFormView: View {
                 text: text,
                 textInputAutocapitalization: .never
             )
+                .accessibilityIdentifier(accessibilityIdentifier)
                 .padding(AppSpacing.md)
                 .background(AppColors.surface, in: RoundedRectangle(cornerRadius: 18))
                 .overlay(

@@ -42,9 +42,13 @@ struct CreateHubView: View {
                     }
                 }
                 .padding(AppSpacing.md)
+                .accessibilityIdentifier("createHubScreen")
             }
             .background(AppColors.background.ignoresSafeArea())
             .navigationTitle("AI创作")
+            .navigationDestination(for: CreationType.self) { type in
+                CreationFormView(type: type)
+            }
         }
     }
 

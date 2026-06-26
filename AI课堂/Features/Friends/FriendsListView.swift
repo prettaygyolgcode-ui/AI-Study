@@ -46,6 +46,7 @@ struct FriendsListView: View {
                     }
                 }
                 .padding(AppSpacing.lg)
+                .accessibilityIdentifier("friendsScreen")
             }
             .background(AppColors.background.ignoresSafeArea())
             .navigationTitle("AI朋友")
