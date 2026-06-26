@@ -39,19 +39,13 @@ struct AppView: View {
             }
             .tag(AppTab.create)
 
-            NavigationStack {
-                EmptyStateView(title: "广场", message: "下一步接入广场列表和筛选。")
-                    .navigationTitle("广场")
-            }
+            PlazaView()
             .tabItem {
                 Label(AppTab.plaza.title, systemImage: AppTab.plaza.systemImage)
             }
             .tag(AppTab.plaza)
 
-            NavigationStack {
-                EmptyStateView(title: "我的", message: "下一步接入任务、设置和个人内容。")
-                    .navigationTitle("我的")
-            }
+            ProfileView()
             .tabItem {
                 Label(AppTab.profile.title, systemImage: AppTab.profile.systemImage)
             }

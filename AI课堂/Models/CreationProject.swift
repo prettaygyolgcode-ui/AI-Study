@@ -25,6 +25,7 @@ struct CreationProject: Identifiable, Equatable, Hashable {
     var likeCount: Int
     var rating: Double
     var userRating: Int?
+    var isLiked = false
     var prompt: CreationPrompt? = nil
     var updatedAt: Date = .now
 }

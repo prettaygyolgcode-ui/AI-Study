@@ -61,4 +61,15 @@ struct CreationFlowTests {
         #expect(state.project(id: project.id)?.status == .published)
         #expect(state.plazaProjects.contains { $0.id == project.id })
     }
+
+    @Test
+    func deletingProjectRemovesItFromCreationsAndPlaza() {
+        let state = AppState.preview
+        let project = state.plazaProjects[0]
+
+        state.deleteProject(id: project.id)
+
+        #expect(state.project(id: project.id) == nil)
+        #expect(!state.plazaProjects.contains { $0.id == project.id })
+    }
 }

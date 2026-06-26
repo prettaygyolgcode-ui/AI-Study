@@ -48,8 +48,32 @@ final class AppState: ObservableObject {
         projects.filter(\.isPublished)
     }
 
+    var recentFriends: [AIFriend] {
+        recentFriendIDs.compactMap { friendID in
+            friends.first { $0.id == friendID }
+        }
+    }
+
     func project(id: UUID) -> CreationProject? {
         projects.first(where: { $0.id == id })
+    }
+
+    func plazaProjectsFiltered(by kind: CreationType.Kind?, sort: PlazaSort) -> [CreationProject] {
+        let filtered = plazaProjects.filter { project in
+            kind == nil || project.type == kind
+        }
+
+        switch sort {
+        case .recommended:
+            return filtered
+        case .hot:
+            return filtered.sorted { lhs, rhs in
+                if lhs.likeCount == rhs.likeCount {
+                    return lhs.rating > rhs.rating
+                }
+                return lhs.likeCount > rhs.likeCount
+            }
+        }
     }
 
     func openFriend(_ friend: AIFriend) {
@@ -97,5 +121,21 @@ final class AppState: ObservableObject {
         projects[index].isPublished = true
         projects[index].status = .published
         projects[index].updatedAt = .now
+    }
+
+    func toggleLike(projectID: UUID) {
+        guard let index = projects.firstIndex(where: { $0.id == projectID }) else { return }
+        projects[index].isLiked.toggle()
+        projects[index].likeCount += projects[index].isLiked ? 1 : -1
+        projects[index].likeCount = max(0, projects[index].likeCount)
+    }
+
+    func rate(projectID: UUID, value: Int) {
+        guard let index = projects.firstIndex(where: { $0.id == projectID }) else { return }
+        projects[index].userRating = min(max(value, 1), 5)
+    }
+
+    func deleteProject(id: UUID) {
+        projects.removeAll { $0.id == id }
     }
 }
