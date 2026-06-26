@@ -9,9 +9,14 @@ import SwiftUI
 
 @main
 struct AI__App: App {
+    @StateObject private var appState = AppState.preview
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            AppView()
+                .environmentObject(appState)
+                .preferredColorScheme(AppTheme.preferredColorScheme)
+                .tint(AppColors.primaryAction)
         }
     }
 }

@@ -6,7 +6,7 @@
 //
 
 import Testing
-@testable import AI__
+@testable import AI课堂
 
 struct AI__Tests {
 
