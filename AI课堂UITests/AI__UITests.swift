@@ -18,8 +18,20 @@ final class AI__UITests: XCTestCase {
         let app = XCUIApplication()
         app.launch()
 
-        XCTAssertTrue(app.otherElements["splashRoot"].waitForExistence(timeout: 2))
+        _ = app.otherElements["splashRoot"].waitForExistence(timeout: 2)
         XCTAssertTrue(app.otherElements["loginRoot"].waitForExistence(timeout: 4))
+    }
+
+    @MainActor
+    func testLoginFormIsVisuallyCentered() throws {
+        let app = XCUIApplication()
+        app.launch()
+
+        XCTAssertTrue(app.otherElements["loginRoot"].waitForExistence(timeout: 4))
+        let primaryAction = app.buttons["enterClassroomButton"]
+        XCTAssertTrue(primaryAction.waitForExistence(timeout: 2))
+
+        XCTAssertGreaterThan(primaryAction.frame.midY, app.frame.midY)
     }
 
     @MainActor

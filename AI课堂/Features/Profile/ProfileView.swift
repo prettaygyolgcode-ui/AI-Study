@@ -15,9 +15,6 @@ struct ProfileView: View {
                         }
                         profileLink(title: "我的创作", subtitle: "回看保存和发布过的作品", systemImage: "folder") {
                             MyCreationsView()
-                                .padding(AppSpacing.md)
-                                .background(AppColors.background.ignoresSafeArea())
-                                .navigationTitle("我的创作")
                         }
                         profileLink(title: "我的 AI 朋友", subtitle: "最近聊过的伙伴", systemImage: "person.2") {
                             RecentFriendsView()
@@ -25,11 +22,11 @@ struct ProfileView: View {
                         profileLink(title: "语音设置", subtitle: "设置播报、语速和语气", systemImage: "speaker.wave.2") {
                             VoiceSettingsView()
                         }
-                        profileLink(title: "家长设置", subtitle: "使用时长和内容偏好占位", systemImage: "figure.2.and.child.holdinghands") {
-                            PlaceholderInfoView(title: "家长设置", message: "后续将支持使用时长、创作记录、内容偏好等家长管理功能。")
+                        profileLink(title: "家长设置", subtitle: "管理时长、额度、AI 功能和公开发布", systemImage: "figure.2.and.child.holdinghands") {
+                            ParentSettingsGateView()
                         }
-                        profileLink(title: "老师入口", subtitle: "课堂任务和数据面板占位", systemImage: "graduationcap") {
-                            PlaceholderInfoView(title: "老师入口", message: "后续将支持课堂任务布置、作品查看、课堂数据面板等教师功能。")
+                        profileLink(title: "老师入口", subtitle: appState.teacherAccess.statusText, systemImage: "graduationcap") {
+                            TeacherEntryView()
                         }
                         profileLink(title: "账号设置", subtitle: "查看账号并退出登录", systemImage: "gearshape") {
                             AccountSettingsView()
@@ -38,6 +35,7 @@ struct ProfileView: View {
                 }
                 .padding(AppSpacing.md)
             }
+            .accessibilityIdentifier("profileScreen")
             .background(AppColors.background.ignoresSafeArea())
             .navigationTitle("我的")
         }
@@ -113,5 +111,8 @@ struct ProfileView: View {
             )
         }
         .buttonStyle(.plain)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(title)
+        .accessibilityIdentifier("profileLink-\(title)")
     }
 }

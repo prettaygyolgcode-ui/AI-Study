@@ -39,7 +39,7 @@ struct ProjectDetailView: View {
                                 .foregroundStyle(AppColors.textPrimary)
                             infoLine(title: "主题", value: prompt.subject)
                             infoLine(title: "风格", value: prompt.style)
-                            infoLine(title: "感觉", value: prompt.mood)
+                            infoLine(title: "价值", value: prompt.mood)
                         }
                         .padding(AppSpacing.md)
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -50,11 +50,7 @@ struct ProjectDetailView: View {
                         )
                     }
 
-                    if !project.isPublished {
-                        PrimaryButton(title: "发布到广场") {
-                            appState.publishProject(id: project.id)
-                        }
-                    }
+                    publicationAction(for: project)
                 }
                 .padding(AppSpacing.md)
             } else {
@@ -75,5 +71,29 @@ struct ProjectDetailView: View {
                 .font(.subheadline)
                 .foregroundStyle(AppColors.textSecondary)
         }
+    }
+
+    @ViewBuilder
+    private func publicationAction(for project: CreationProject) -> some View {
+        if project.isPublished {
+            EmptyView()
+        } else if project.status == .pendingReview {
+            statusMessage("作品已提交审核，老师通过后会出现在广场。")
+        } else if appState.parentSettings.allowPublicPublishing && appState.parentSettings.isPublicWorksEnabled {
+            PrimaryButton(title: "提交发布审核") {
+                appState.requestProjectPublishing(id: project.id)
+            }
+        } else {
+            statusMessage("家长设置当前不允许公开发布作品。")
+        }
+    }
+
+    private func statusMessage(_ message: String) -> some View {
+        Text(message)
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(AppColors.textPrimary)
+            .padding(AppSpacing.md)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(AppColors.chipFill, in: RoundedRectangle(cornerRadius: 18))
     }
 }

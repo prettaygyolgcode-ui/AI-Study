@@ -2,10 +2,13 @@ import Foundation
 import SwiftUI
 
 struct CreationProject: Identifiable, Equatable, Hashable {
-    enum Status: String, Equatable, Hashable {
+    enum Status: String, CaseIterable, Identifiable, Equatable, Hashable {
         case draft
-        case saved
+        case pendingReview
         case published
+        case rejected
+
+        var id: String { rawValue }
     }
 
     enum Origin: Equatable, Hashable {
@@ -24,7 +27,6 @@ struct CreationProject: Identifiable, Equatable, Hashable {
     var isPublished: Bool
     var likeCount: Int
     var rating: Double
-    var userRating: Int?
     var isLiked = false
     var prompt: CreationPrompt? = nil
     var updatedAt: Date = .now
@@ -39,12 +41,11 @@ extension CreationProject {
             previewText: type.previewText(for: prompt),
             authorName: author,
             coverSymbol: type.defaultCoverSymbol,
-            status: .saved,
+            status: .pendingReview,
             origin: .manual,
             isPublished: false,
             likeCount: 0,
             rating: 0,
-            userRating: nil,
             prompt: prompt
         )
     }
@@ -55,10 +56,12 @@ extension CreationProject.Status {
         switch self {
         case .draft:
             return "草稿"
-        case .saved:
-            return "已保存"
+        case .pendingReview:
+            return "待审核"
         case .published:
             return "已发布"
+        case .rejected:
+            return "被驳回"
         }
     }
 
@@ -66,10 +69,12 @@ extension CreationProject.Status {
         switch self {
         case .draft:
             return Color(red: 0.93, green: 0.63, blue: 0.24)
-        case .saved:
+        case .pendingReview:
             return Color(red: 0.31, green: 0.66, blue: 0.53)
         case .published:
             return Color(red: 0.36, green: 0.53, blue: 0.95)
+        case .rejected:
+            return Color(red: 0.9, green: 0.36, blue: 0.32)
         }
     }
 }
@@ -103,8 +108,6 @@ private extension CreationType.Kind {
             return "一个关于\(subject)的\(style.isEmpty ? "原创" : style)动画提案，整体节奏偏\(mood.isEmpty ? "生动" : mood)。"
         case .game:
             return "一个围绕\(subject)设计的\(style.isEmpty ? "创意" : style)小游戏方案，体验感偏\(mood.isEmpty ? "好玩" : mood)。"
-        case .report:
-            return "一份关于\(subject)的\(style.isEmpty ? "课堂" : style)报告草稿，表达方式偏\(mood.isEmpty ? "清晰" : mood)。"
         }
     }
 }

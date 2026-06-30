@@ -8,4 +8,6 @@ struct AIFriend: Identifiable, Equatable, Hashable {
     let tags: [String]
     let welcomeMessage: String
     let quickActions: [FriendQuickAction]
+    var isClassroomAssigned = false
+    var assignmentNote: String?
 }

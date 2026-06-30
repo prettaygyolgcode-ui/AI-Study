@@ -7,6 +7,7 @@ struct VoiceSettingsView: View {
         Form {
             Section("播报") {
                 Toggle("开启作品朗读", isOn: narrationBinding)
+                Toggle("开启语音输入", isOn: voiceInputBinding)
             }
 
             Section("声音") {
@@ -32,6 +33,13 @@ struct VoiceSettingsView: View {
         Binding(
             get: { appState.voiceSettings.isNarrationEnabled },
             set: { appState.voiceSettings.isNarrationEnabled = $0 }
+        )
+    }
+
+    private var voiceInputBinding: Binding<Bool> {
+        Binding(
+            get: { appState.voiceSettings.isVoiceInputEnabled },
+            set: { appState.voiceSettings.isVoiceInputEnabled = $0 }
         )
     }
 

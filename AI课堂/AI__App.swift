@@ -9,7 +9,7 @@ import SwiftUI
 
 @main
 struct AI__App: App {
-    @StateObject private var appState = AppState.preview
+    @StateObject private var appState = AppState.live
 
     var body: some Scene {
         WindowGroup {

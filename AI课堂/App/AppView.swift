@@ -5,6 +5,7 @@ struct AppView: View {
     @State private var selectedTab: AppTab = .friends
     @State private var hasFinishedSplash = false
     @State private var didScheduleSplashTransition = false
+    @State private var didLoadBootstrap = false
 
     var body: some View {
         Group {
@@ -22,6 +23,9 @@ struct AppView: View {
                 homeView
                     .accessibilityIdentifier("mainRoot")
             }
+        }
+        .task {
+            await loadBootstrapOnce()
         }
     }
 
@@ -62,5 +66,11 @@ struct AppView: View {
                 hasFinishedSplash = true
             }
         }
+    }
+
+    private func loadBootstrapOnce() async {
+        guard !didLoadBootstrap else { return }
+        didLoadBootstrap = true
+        await appState.refreshBackendBootstrap()
     }
 }

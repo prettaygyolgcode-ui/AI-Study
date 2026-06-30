@@ -13,7 +13,7 @@ struct PlazaView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: AppSpacing.lg) {
-                    SectionHeader(title: "作品广场", subtitle: "看看同学们公开发布的故事、图画、音乐和课堂报告。")
+                    SectionHeader(title: "作品广场", subtitle: "看看同学们公开发布的故事、图画、音乐、动画和游戏。")
                     filterBar
                     sortBar
 
@@ -37,6 +37,9 @@ struct PlazaView: View {
             }
             .background(AppColors.background.ignoresSafeArea())
             .navigationTitle("广场")
+            .task {
+                await appState.refreshBackendWorks()
+            }
         }
     }
 

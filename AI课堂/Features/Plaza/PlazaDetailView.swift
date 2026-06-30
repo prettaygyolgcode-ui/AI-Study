@@ -15,7 +15,7 @@ struct PlazaDetailView: View {
                     ProjectCardView(project: project)
 
                     VStack(alignment: .leading, spacing: AppSpacing.md) {
-                        SectionHeader(title: "作品互动", subtitle: "点赞和打分只保存在当前前端原型里。")
+                        SectionHeader(title: "作品互动", subtitle: "可以点赞作品，分数为只读展示。")
 
                         HStack(spacing: AppSpacing.md) {
                             Button {
@@ -33,15 +33,8 @@ struct PlazaDetailView: View {
                             .buttonStyle(.plain)
                             .foregroundStyle(project.isLiked ? AppColors.warmAccent : AppColors.primaryAction)
 
-                            Text("均分 \(String(format: "%.1f", project.rating))")
-                                .font(.headline.weight(.semibold))
-                                .foregroundStyle(AppColors.textPrimary)
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 14)
-                                .background(AppColors.surfaceSoft, in: RoundedRectangle(cornerRadius: 18))
+                            scoreBadge(project.rating)
                         }
-
-                        ratingRow(project: project)
                     }
                     .padding(AppSpacing.md)
                     .background(AppColors.surface, in: RoundedRectangle(cornerRadius: 24))
@@ -77,27 +70,13 @@ struct PlazaDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
     }
 
-    private func ratingRow(project: CreationProject) -> some View {
-        VStack(alignment: .leading, spacing: AppSpacing.sm) {
-            Text(project.userRating == nil ? "给这个作品打分" : "你的评分：\(project.userRating ?? 0) 分")
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(AppColors.textPrimary)
-
-            HStack(spacing: AppSpacing.xs) {
-                ForEach(1...5, id: \.self) { value in
-                    Button {
-                        appState.rate(projectID: project.id, value: value)
-                    } label: {
-                        Image(systemName: (project.userRating ?? 0) >= value ? "star.fill" : "star")
-                            .font(.title3)
-                            .foregroundStyle(AppColors.warmAccent)
-                            .frame(width: 38, height: 38)
-                            .background(AppColors.chipFill, in: Circle())
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
-        }
+    private func scoreBadge(_ score: Double) -> some View {
+        Label("作品分数 \(String(format: "%.1f", score))", systemImage: "star.fill")
+            .font(.headline.weight(.semibold))
+            .foregroundStyle(AppColors.textPrimary)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 14)
+            .background(AppColors.surfaceSoft, in: RoundedRectangle(cornerRadius: 18))
     }
 
     private func infoLine(title: String, value: String) -> some View {

@@ -18,6 +18,7 @@ struct VoiceSettings: Equatable {
     }
 
     var isNarrationEnabled: Bool
+    var isVoiceInputEnabled = true
     var speed: Speed
     var tone: Tone
 }

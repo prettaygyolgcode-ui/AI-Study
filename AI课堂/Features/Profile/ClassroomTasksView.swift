@@ -5,17 +5,22 @@ struct ClassroomTasksView: View {
 
     var body: some View {
         ScrollView {
-            LazyVStack(spacing: AppSpacing.md) {
-                ForEach(appState.tasks) { task in
-                    NavigationLink {
-                        ClassroomTaskDetailView(task: task)
-                    } label: {
-                        taskCard(task)
+            if appState.tasks.isEmpty {
+                EmptyStateView(title: "还没有课堂任务", message: "老师发布任务后会显示在这里。")
+                    .padding(AppSpacing.md)
+            } else {
+                LazyVStack(spacing: AppSpacing.md) {
+                    ForEach(appState.tasks) { task in
+                        NavigationLink {
+                            ClassroomTaskDetailView(task: task)
+                        } label: {
+                            taskCard(task)
+                        }
+                        .buttonStyle(.plain)
                     }
-                    .buttonStyle(.plain)
                 }
+                .padding(AppSpacing.md)
             }
-            .padding(AppSpacing.md)
         }
         .background(AppColors.background.ignoresSafeArea())
         .navigationTitle("课堂任务")

@@ -19,7 +19,7 @@ struct CreationResultView: View {
                         Text("创作完成")
                             .font(.title2.weight(.bold))
                             .foregroundStyle(AppColors.textPrimary)
-                        Text("作品已经放进“我的创作”，你可以继续修改，也可以直接发布到广场。")
+                        Text("作品已经放进“我的创作”，公开展示前需要经过老师审批。")
                             .font(.subheadline)
                             .foregroundStyle(AppColors.textSecondary)
                     }
@@ -46,14 +46,7 @@ struct CreationResultView: View {
                         showProjectDetail = true
                     }
 
-                    if !project.isPublished {
-                        Button("发布到广场") {
-                            appState.publishProject(id: project.id)
-                        }
-                        .accessibilityIdentifier("publishToPlazaButton")
-                        .buttonStyle(.bordered)
-                        .tint(AppColors.primaryAction)
-                    }
+                    publishRequestArea(for: project)
                 }
                 .padding(AppSpacing.md)
             } else {
@@ -76,7 +69,7 @@ struct CreationResultView: View {
 
             promptLine(title: "主题", value: prompt.subject)
             promptLine(title: "风格", value: prompt.style)
-            promptLine(title: "感觉", value: prompt.mood)
+            promptLine(title: "价值", value: prompt.mood)
         }
         .padding(AppSpacing.md)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -94,6 +87,31 @@ struct CreationResultView: View {
                 .foregroundStyle(AppColors.textPrimary)
             Text(value.isEmpty ? "未填写" : value)
                 .font(.subheadline)
+                .foregroundStyle(AppColors.textSecondary)
+        }
+    }
+
+    @ViewBuilder
+    private func publishRequestArea(for project: CreationProject) -> some View {
+        if project.isPublished {
+            EmptyView()
+        } else if project.status == .pendingReview {
+            Text("已提交审核，老师通过后会发布到广场。")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(AppColors.textPrimary)
+                .padding(AppSpacing.md)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(AppColors.chipFill, in: RoundedRectangle(cornerRadius: 18))
+        } else if appState.parentSettings.allowPublicPublishing && appState.parentSettings.isPublicWorksEnabled {
+            Button("提交发布审核") {
+                appState.requestProjectPublishing(id: project.id)
+            }
+            .accessibilityIdentifier("publishToPlazaButton")
+            .buttonStyle(.bordered)
+            .tint(AppColors.primaryAction)
+        } else {
+            Text("家长设置当前不允许公开发布作品。")
+                .font(.subheadline.weight(.semibold))
                 .foregroundStyle(AppColors.textSecondary)
         }
     }

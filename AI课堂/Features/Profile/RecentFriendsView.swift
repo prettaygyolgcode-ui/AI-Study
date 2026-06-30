@@ -5,12 +5,46 @@ struct RecentFriendsView: View {
 
     var body: some View {
         ScrollView {
-            if appState.recentFriends.isEmpty {
-                EmptyStateView(title: "还没有最近朋友", message: "先去 AI朋友 页面选择一个伙伴聊聊。")
+            VStack(alignment: .leading, spacing: AppSpacing.lg) {
+                ForEach(appState.profileFriendGroups) { group in
+                    friendGroupSection(group)
+                }
+            }
+            .padding(AppSpacing.md)
+        }
+        .background(AppColors.background.ignoresSafeArea())
+        .navigationTitle("我的 AI 朋友")
+    }
+
+    private func friendGroupSection(_ group: ProfileFriendGroup) -> some View {
+        VStack(alignment: .leading, spacing: AppSpacing.md) {
+            HStack {
+                Text(group.title)
+                    .font(.headline.weight(.bold))
+                    .foregroundStyle(AppColors.textPrimary)
+                Spacer()
+                Text("\(group.friends.count)")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(AppColors.primaryAction)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 5)
+                    .background(AppColors.chipFill, in: Capsule())
+            }
+
+            if group.friends.isEmpty {
+                Text(group.emptyMessage)
+                    .font(.subheadline)
+                    .foregroundStyle(AppColors.textSecondary)
                     .padding(AppSpacing.md)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(AppColors.surface, in: RoundedRectangle(cornerRadius: 18))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 18)
+                            .stroke(AppColors.stroke, lineWidth: 1)
+                    )
             } else {
-                LazyVStack(spacing: AppSpacing.md) {
-                    ForEach(appState.recentFriends) { friend in
+                LazyVStack(spacing: AppSpacing.sm) {
+                    ForEach(group.friends) { friend in
                         NavigationLink {
                             FriendChatView(friend: friend)
                         } label: {
@@ -19,11 +53,8 @@ struct RecentFriendsView: View {
                         .buttonStyle(.plain)
                     }
                 }
-                .padding(AppSpacing.md)
             }
         }
-        .background(AppColors.background.ignoresSafeArea())
-        .navigationTitle("我的 AI 朋友")
     }
 
     private func friendCard(_ friend: AIFriend) -> some View {
@@ -34,9 +65,15 @@ struct RecentFriendsView: View {
                 .background(AppColors.chipFill, in: RoundedRectangle(cornerRadius: 18))
 
             VStack(alignment: .leading, spacing: AppSpacing.xs) {
-                Text(friend.name)
-                    .font(.headline)
-                    .foregroundStyle(AppColors.textPrimary)
+                HStack(spacing: AppSpacing.xs) {
+                    Text(friend.name)
+                        .font(.headline)
+                        .foregroundStyle(AppColors.textPrimary)
+                    if appState.isFavorite(friend) {
+                        Image(systemName: "star.fill")
+                            .foregroundStyle(AppColors.warmAccent)
+                    }
+                }
                 Text(friend.subtitle)
                     .font(.subheadline)
                     .foregroundStyle(AppColors.textSecondary)

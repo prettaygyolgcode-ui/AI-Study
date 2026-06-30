@@ -27,7 +27,7 @@ struct CreationFlowTests {
     }
 
     @Test
-    func submittingFormCreatesSavedProject() {
+    func submittingFormCreatesPendingReviewProject() {
         let state = AppState.preview
         let prompt = CreationPrompt(
             title: "太空冒险",
@@ -38,7 +38,7 @@ struct CreationFlowTests {
 
         let project = state.generateProject(type: .story, prompt: prompt)
 
-        #expect(project.status == .saved)
+        #expect(project.status == .pendingReview)
         #expect(project.title == "太空冒险")
         #expect(project.prompt == prompt)
         #expect(state.projects.first?.title == "太空冒险")
@@ -65,7 +65,11 @@ struct CreationFlowTests {
     @Test
     func deletingProjectRemovesItFromCreationsAndPlaza() {
         let state = AppState.preview
-        let project = state.plazaProjects[0]
+        let project = state.generateProject(
+            type: .story,
+            prompt: CreationPrompt(title: "待删除作品", subject: "主题", style: "风格", mood: "感受")
+        )
+        state.publishProject(id: project.id)
 
         state.deleteProject(id: project.id)
 

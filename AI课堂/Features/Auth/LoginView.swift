@@ -9,27 +9,61 @@ struct LoginView: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: AppSpacing.lg) {
-                    formCard
+            GeometryReader { proxy in
+                ScrollView {
+                    VStack(spacing: AppSpacing.xl) {
+                        brandHeader
+                        formCard
+                    }
+                    .frame(maxWidth: 520)
+                    .frame(maxWidth: .infinity, minHeight: proxy.size.height, alignment: .center)
+                    .padding(.horizontal, AppSpacing.lg)
+                    .padding(.vertical, AppSpacing.xl)
                 }
-                .padding(AppSpacing.md)
+                .scrollIndicators(.hidden)
+                .background(loginBackground.ignoresSafeArea())
             }
-            .frame(maxWidth: 680)
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-            .background(loginBackground.ignoresSafeArea())
         }
     }
 
-    private var formCard: some View {
-        VStack(alignment: .leading, spacing: AppSpacing.md) {
-            Text("手机号登录")
-                .font(.title3.weight(.bold))
-                .foregroundStyle(AppColors.textPrimary)
+    private var brandHeader: some View {
+        VStack(spacing: AppSpacing.sm) {
+            ZStack {
+                Circle()
+                    .fill(AppColors.surface)
+                    .frame(width: 72, height: 72)
+                    .shadow(color: AppColors.shadow, radius: 14, y: 8)
 
-            Text("验证码固定为 `123456`，用于当前前端原型联调。")
-                .font(.subheadline)
-                .foregroundStyle(AppColors.textSecondary)
+                Image(systemName: "sparkles")
+                    .font(.system(size: 30, weight: .bold))
+                    .foregroundStyle(AppColors.warmAccent)
+            }
+
+            VStack(spacing: AppSpacing.xs) {
+                Text("AI课堂")
+                    .font(.largeTitle.weight(.bold))
+                    .foregroundStyle(AppColors.textPrimary)
+
+                Text("登录后继续你的 AI 创作学习")
+                    .font(.subheadline)
+                    .foregroundStyle(AppColors.textSecondary)
+                    .multilineTextAlignment(.center)
+            }
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    private var formCard: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.lg) {
+            VStack(alignment: .leading, spacing: AppSpacing.xs) {
+                Text("家长手机号登录")
+                    .font(.title3.weight(.bold))
+                    .foregroundStyle(AppColors.textPrimary)
+
+                Text("本地 Docker 后台验证码固定为 123456。")
+                    .font(.subheadline)
+                    .foregroundStyle(AppColors.textSecondary)
+            }
 
             labeledField(title: "家长手机号") {
                 ThemedTextField(
@@ -60,12 +94,28 @@ struct LoginView: View {
                                 .stroke(AppColors.loginOutline, lineWidth: 1)
                         )
 
-                    Button(viewModel.countdown > 0 ? "\(viewModel.countdown)s 后重试" : "获取验证码") {
+                    Button {
                         viewModel.requestCode()
+                    } label: {
+                        Text(viewModel.countdown > 0 ? "\(viewModel.countdown)s 后重试" : "获取验证码")
+                            .font(.subheadline.weight(.semibold))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.85)
+                            .frame(minWidth: 104)
+                    }
+                    .padding(.horizontal, AppSpacing.sm)
+                    .frame(height: 52)
+                    .background(
+                        requestCodeButtonFill,
+                        in: RoundedRectangle(cornerRadius: 18)
+                    )
+                    .foregroundStyle(requestCodeButtonText)
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 18)
+                            .stroke(AppColors.loginOutline, lineWidth: viewModel.canRequestCode ? 0 : 1)
                     }
                     .accessibilityIdentifier("requestCodeButton")
-                    .buttonStyle(.borderedProminent)
-                    .tint(AppColors.primaryAction)
+                    .buttonStyle(.plain)
                     .disabled(!viewModel.canRequestCode || viewModel.countdown > 0)
                 }
             }
@@ -77,19 +127,33 @@ struct LoginView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
 
-            Button("进入课堂") {
-                _ = viewModel.submit()
+            Button {
+                Task {
+                    await viewModel.submitWithBackend()
+                }
+            } label: {
+                Label(viewModel.isSubmitting ? "正在连接后台" : "进入课堂", systemImage: "arrow.right.circle.fill")
+                    .font(.headline.weight(.semibold))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 15)
             }
+            .foregroundStyle(.white)
+            .background(
+                viewModel.canSubmit ? AppColors.primaryAction : AppColors.primaryActionDisabled,
+                in: RoundedRectangle(cornerRadius: 18)
+            )
+            .shadow(color: viewModel.canSubmit ? AppColors.primaryAction.opacity(0.22) : .clear, radius: 12, y: 6)
+            .buttonStyle(.plain)
+            .disabled(!viewModel.canSubmit || viewModel.isSubmitting)
             .accessibilityIdentifier("enterClassroomButton")
-            .buttonStyle(.borderedProminent)
-            .tint(AppColors.primaryAction)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .disabled(!viewModel.canSubmit)
 
-            Button("跳过登录，直接进入") {
+            Button {
                 viewModel.skipLogin()
+            } label: {
+                Text("跳过登录，直接进入")
+                    .font(.subheadline.weight(.semibold))
+                    .frame(maxWidth: .infinity)
             }
-            .font(.subheadline.weight(.semibold))
             .foregroundStyle(AppColors.primaryAction)
         }
         .padding(AppSpacing.xl)
@@ -100,6 +164,20 @@ struct LoginView: View {
                 .stroke(AppColors.stroke, lineWidth: 1)
         )
         .shadow(color: AppColors.shadow, radius: 20, y: 10)
+    }
+
+    private var requestCodeButtonFill: Color {
+        guard viewModel.canRequestCode, viewModel.countdown == 0 else {
+            return AppColors.surface
+        }
+        return AppColors.primaryAction
+    }
+
+    private var requestCodeButtonText: Color {
+        guard viewModel.canRequestCode, viewModel.countdown == 0 else {
+            return AppColors.textSecondary
+        }
+        return .white
     }
 
     private var loginBackground: some View {

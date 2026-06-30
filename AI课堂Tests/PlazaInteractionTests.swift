@@ -6,6 +6,8 @@ struct PlazaInteractionTests {
     @Test
     func filteringPlazaByTypeReturnsOnlySelectedType() {
         let state = AppState.preview
+        publishProject(state: state, type: .story, title: "故事作品")
+        publishProject(state: state, type: .drawing, title: "图画作品")
 
         let stories = state.plazaProjectsFiltered(by: .story, sort: .recommended)
 
@@ -16,6 +18,11 @@ struct PlazaInteractionTests {
     @Test
     func hotSortOrdersPlazaByLikeCountDescending() {
         let state = AppState.preview
+        let first = publishProject(state: state, type: .story, title: "第一个作品")
+        let second = publishProject(state: state, type: .drawing, title: "第二个作品")
+
+        state.projects[state.projects.firstIndex(where: { $0.id == first.id })!].likeCount = 1
+        state.projects[state.projects.firstIndex(where: { $0.id == second.id })!].likeCount = 2
 
         let hotProjects = state.plazaProjectsFiltered(by: nil, sort: .hot)
 
@@ -28,7 +35,7 @@ struct PlazaInteractionTests {
     @Test
     func togglingLikeAddsAndRemovesOneLike() {
         let state = AppState.preview
-        let project = state.plazaProjects[0]
+        let project = publishProject(state: state, type: .game, title: "可点赞作品")
         let originalLikeCount = project.likeCount
 
         state.toggleLike(projectID: project.id)
@@ -41,12 +48,21 @@ struct PlazaInteractionTests {
     }
 
     @Test
-    func ratingProjectStoresUserRating() {
+    func publishedProjectKeepsReadOnlyScore() {
         let state = AppState.preview
-        let project = state.plazaProjects[0]
+        let project = publishProject(state: state, type: .animation, title: "有分数作品")
 
-        state.rate(projectID: project.id, value: 4)
+        state.projects[state.projects.firstIndex(where: { $0.id == project.id })!].rating = 4.6
 
-        #expect(state.project(id: project.id)?.userRating == 4)
+        #expect(state.project(id: project.id)?.rating == 4.6)
+    }
+
+    private func publishProject(state: AppState, type: CreationType.Kind, title: String) -> CreationProject {
+        let project = state.generateProject(
+            type: type,
+            prompt: CreationPrompt(title: title, subject: "主题", style: "风格", mood: "感受")
+        )
+        state.publishProject(id: project.id)
+        return state.project(id: project.id)!
     }
 }

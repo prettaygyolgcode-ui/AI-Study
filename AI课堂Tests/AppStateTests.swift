@@ -4,14 +4,15 @@ import Testing
 @MainActor
 struct AppStateTests {
     @Test
-    func bootstrapLoadsPhaseOneMockData() {
+    func bootstrapLoadsPrototypeConfigurationWithoutSeededUserContent() {
         let state = AppState.preview
 
         #expect(state.friends.count == 6)
-        #expect(state.creationTypes.count == 6)
-        #expect(state.projects.count >= 8)
-        #expect(state.plazaProjects.count >= 4)
-        #expect(state.tasks.count == 3)
+        #expect(state.creationTypes.count == 5)
+        #expect(!state.creationTypes.contains { $0.kind.rawValue == "report" })
+        #expect(state.projects.isEmpty)
+        #expect(state.plazaProjects.isEmpty)
+        #expect(state.tasks.isEmpty)
         #expect(state.isLoggedIn == false)
     }
 }

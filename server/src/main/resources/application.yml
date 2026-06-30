@@ -1,0 +1,26 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: ai-classroom-server
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/ai_classroom}
+    username: ${SPRING_DATASOURCE_USERNAME:ai_classroom}
+    password: ${SPRING_DATASOURCE_PASSWORD:ai_classroom_dev}
+  flyway:
+    enabled: true
+  servlet:
+    multipart:
+      max-file-size: 200MB
+      max-request-size: 220MB
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+app:
+  jwt-secret: ${JWT_SECRET:local-dev-change-me-local-dev-change-me}
+  upload-dir: ${UPLOAD_DIR:/tmp/ai-classroom-uploads}

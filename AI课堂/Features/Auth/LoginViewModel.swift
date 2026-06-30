@@ -7,6 +7,7 @@ final class LoginViewModel: ObservableObject {
     @Published var verificationCode = ""
     @Published var countdown = 0
     @Published var errorMessage: String?
+    @Published var isSubmitting = false
 
     private unowned let appState: AppState
 
@@ -26,6 +27,10 @@ final class LoginViewModel: ObservableObject {
         guard canRequestCode else { return }
         countdown = 59
         errorMessage = nil
+
+        Task {
+            await appState.requestBackendLoginCode(phoneNumber: phoneNumber)
+        }
     }
 
     func skipLogin() {
@@ -48,5 +53,22 @@ final class LoginViewModel: ObservableObject {
         errorMessage = nil
         appState.isLoggedIn = true
         return true
+    }
+
+    func submitWithBackend() async {
+        guard canSubmit else {
+            errorMessage = "请输入正确的手机号和验证码"
+            return
+        }
+
+        isSubmitting = true
+        defer { isSubmitting = false }
+
+        let didLogin = await appState.loginWithBackend(phoneNumber: phoneNumber, code: verificationCode)
+        if didLogin {
+            errorMessage = nil
+        } else {
+            errorMessage = "验证码错误或后台暂不可用"
+        }
     }
 }
